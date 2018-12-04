@@ -1,0 +1,16 @@
+[
+{
+  "modid": "youre_an_expert_harry",
+  "name": "You're an expert, Harry!",
+  "description": "The new age of modpacks is here!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["quaternary"],
+  "credits": "ftb odyssey is a good pack",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
