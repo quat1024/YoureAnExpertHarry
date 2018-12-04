@@ -32,13 +32,21 @@ public class YAEHSettings {
 		bannedItems.add(new ItemStack(Blocks.REPEATING_COMMAND_BLOCK));
 		bannedItems.add(new ItemStack(Blocks.BARRIER));
 		bannedItems.add(new ItemStack(Blocks.STRUCTURE_BLOCK));
+		bannedItems.add(new ItemStack(Blocks.STRUCTURE_VOID));
 		bannedItems.add(new ItemStack(Blocks.END_PORTAL_FRAME));
+		bannedItems.add(new ItemStack(Blocks.MOB_SPAWNER));
+		bannedItems.add(new ItemStack(Blocks.FARMLAND));
+		bannedItems.add(new ItemStack(Blocks.GRASS_PATH));
+		addAllSubtypesTo(bannedItems, Blocks.MONSTER_EGG);
+		bannedItems.add(new ItemStack(Items.COMMAND_BLOCK_MINECART));
+		bannedItems.add(new ItemStack(Items.SPAWN_EGG));
+		bannedItems.add(new ItemStack(Items.KNOWLEDGE_BOOK));
 		
-		heckMethods.add(new HeckMethodProps(HeckMethods.SHAPELESS_TWO_BY_TWO, 0, 3));
-		heckMethods.add(new HeckMethodProps(HeckMethods.FOUR_WAY_SYMMETRICAL_THREE_BY_THREE, 2, 8));
-		heckMethods.add(new HeckMethodProps(HeckMethods.SYMMETRICAL_SHAPED_THREE_BY_THREE, 2, 8));
-		heckMethods.add(new HeckMethodProps(HeckMethods.SHAPED_THREE_BY_THREE, 5, 10));
-		heckMethods.add(new HeckMethodProps(HeckMethods.SMELTING, 1, 5));
+		heckMethods.add(new HeckMethodProps(HeckMethods.SHAPELESS_TWO_BY_TWO, 1, 3));
+		heckMethods.add(new HeckMethodProps(HeckMethods.FOUR_WAY_SYMMETRICAL_THREE_BY_THREE, 2, 4));
+		heckMethods.add(new HeckMethodProps(HeckMethods.SYMMETRICAL_SHAPED_THREE_BY_THREE, 2, 4));
+		heckMethods.add(new HeckMethodProps(HeckMethods.SHAPED_THREE_BY_THREE, 5, 5));
+		heckMethods.add(new HeckMethodProps(HeckMethods.SMELTING, 1, 4));
 	}
 	
 	private static void addAllSubtypesTo(List<ItemStack> list, Block b) {
