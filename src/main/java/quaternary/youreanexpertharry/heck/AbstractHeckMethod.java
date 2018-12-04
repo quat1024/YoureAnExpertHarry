@@ -25,7 +25,7 @@ public abstract class AbstractHeckMethod {
 	
 	public static String stackToBracket(ItemStack stack) {
 		if(stack.getMetadata() != 0) {
-			return String.format("<%s:1:%s>", stack.getItem().getRegistryName(), stack.getMetadata());
+			return String.format("<item:%s:%s>", stack.getItem().getRegistryName(), stack.getMetadata());
 		} else {
 			return String.format("<%s>", stack.getItem().getRegistryName());
 		}

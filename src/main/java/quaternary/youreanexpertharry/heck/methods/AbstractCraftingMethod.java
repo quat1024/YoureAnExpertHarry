@@ -21,7 +21,7 @@ public abstract class AbstractCraftingMethod extends AbstractHeckMethod {
 	@Override
 	public String removeExistingRecipe(ItemStack output) {
 		return String.format(
-						"recipes.remove(%s);",
+						"recipes.remove(%s, false);",
 						stackToBracket(output)
 		);
 	}
