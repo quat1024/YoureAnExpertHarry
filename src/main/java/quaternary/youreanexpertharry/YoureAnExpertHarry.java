@@ -51,6 +51,12 @@ public class YoureAnExpertHarry {
 		
 		settingsFile = new File(e.getSuggestedConfigurationFile().getParent() + File.separator + MODID + ".json");
 		
+		
+	}
+	
+	@Mod.EventHandler
+	public static void postinit(FMLPostInitializationEvent e) {
+		
 		try {
 			boolean newlyCreated = settingsFile.createNewFile();
 			
@@ -78,10 +84,8 @@ public class YoureAnExpertHarry {
 			LOGGER.error("Falling back to using default settings!");
 			settings = new YAEHSettings();
 		}
-	}
-	
-	@Mod.EventHandler
-	public static void postinit(FMLPostInitializationEvent e) {
+		
 		ClientCommandHandler.instance.registerCommand(new CommandDump());
+		
 	}
 }
