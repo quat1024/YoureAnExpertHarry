@@ -111,7 +111,8 @@ public class Heck {
 		if(methods.size() == 0) throw new Heckception("No heckmethods available for level " + currentLevel);
 		else return methods.get(random.nextInt(methods.size()));
 	}
-	
+
+	//Going to add a list of tier-banned items to the parameters.
 	private static ItemStack chooseItem(Set<GoodItemStack> forbiddenItems, GoodItemStack alsoBannedItem) throws Heckception {
 		for(int tries = 0; tries < 1000; tries++) {
 			Item i = allItems.get(random.nextInt(allItems.size()));
@@ -137,6 +138,7 @@ public class Heck {
 		public GoodItemStack(ItemStack actualStack) {
 			this.actualStack = actualStack;
 		}
+		public GoodItemStack(HeckTier.TierItemStack actualStack) {this.actualStack = actualStack.stack;}
 		
 		public ItemStack actualStack;
 		

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import java.util.List;
 import java.util.Optional;
 
+//Here should go a method that gets "required type of item" like if a machine block is required. Or something.
 public abstract class AbstractHeckMethod {
 	public AbstractHeckMethod(int inputCount) {
 		this.inputCount = inputCount;

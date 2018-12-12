@@ -7,40 +7,41 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import quaternary.youreanexpertharry.heck.HeckMethods;
 import quaternary.youreanexpertharry.etc.HeckMethodProps;
+import quaternary.youreanexpertharry.heck.HeckTier;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class YAEHSettings {
-	public List<ItemStack> goalItems = new ArrayList<>();
-	public int topDifficulty = 10;
+	public List<HeckTier.TierItemStack> goalItems = new ArrayList<>();
+	public int topDifficulty = 5;
 	
-	public List<ItemStack> bannedItems = new ArrayList<>();
+	public List<HeckTier.TierItemStack> bannedItems = new ArrayList<>();
 	
 	public List<HeckMethodProps> heckMethods = new ArrayList<>();
 	
 	{
-		goalItems.add(new ItemStack(Items.CLAY_BALL));
-		goalItems.add(new ItemStack(Blocks.CLAY));
-		goalItems.add(new ItemStack(Blocks.BEACON));
+		goalItems.add(new HeckTier.TierItemStack(Items.CLAY_BALL));
+		goalItems.add(new HeckTier.TierItemStack(Blocks.CLAY));
+		goalItems.add(new HeckTier.TierItemStack(Blocks.BEACON));
 		//You can't even use these in gamemode 0 but that won't stop me
-		goalItems.add(new ItemStack(Blocks.COMMAND_BLOCK));
+		goalItems.add(new HeckTier.TierItemStack(Blocks.COMMAND_BLOCK));
 		
-		bannedItems.add(new ItemStack(Blocks.BEDROCK));
-		bannedItems.add(new ItemStack(Blocks.COMMAND_BLOCK));
-		bannedItems.add(new ItemStack(Blocks.CHAIN_COMMAND_BLOCK));
-		bannedItems.add(new ItemStack(Blocks.REPEATING_COMMAND_BLOCK));
-		bannedItems.add(new ItemStack(Blocks.BARRIER));
-		bannedItems.add(new ItemStack(Blocks.STRUCTURE_BLOCK));
-		bannedItems.add(new ItemStack(Blocks.STRUCTURE_VOID));
-		bannedItems.add(new ItemStack(Blocks.END_PORTAL_FRAME));
-		bannedItems.add(new ItemStack(Blocks.MOB_SPAWNER));
-		bannedItems.add(new ItemStack(Blocks.FARMLAND));
-		bannedItems.add(new ItemStack(Blocks.GRASS_PATH));
-		addAllSubtypesTo(bannedItems, Blocks.MONSTER_EGG);
-		bannedItems.add(new ItemStack(Items.COMMAND_BLOCK_MINECART));
-		bannedItems.add(new ItemStack(Items.SPAWN_EGG));
-		bannedItems.add(new ItemStack(Items.KNOWLEDGE_BOOK));
+		bannedItems.add(new HeckTier.TierItemStack(new ItemStack(Blocks.BEDROCK), 1));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.COMMAND_BLOCK));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.CHAIN_COMMAND_BLOCK));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.REPEATING_COMMAND_BLOCK));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.BARRIER));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.STRUCTURE_BLOCK));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.STRUCTURE_VOID));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.END_PORTAL_FRAME));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.MOB_SPAWNER));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.FARMLAND));
+		bannedItems.add(new HeckTier.TierItemStack(Blocks.GRASS_PATH));
+		addAllSubtypesTo(bannedItems, Blocks.MONSTER_EGG, 0);
+		bannedItems.add(new HeckTier.TierItemStack(Items.COMMAND_BLOCK_MINECART));
+		bannedItems.add(new HeckTier.TierItemStack(Items.SPAWN_EGG));
+		bannedItems.add(new HeckTier.TierItemStack(Items.KNOWLEDGE_BOOK));
 		
 		heckMethods.add(new HeckMethodProps(HeckMethods.SHAPELESS_TWO_BY_TWO, 1, 3));
 		heckMethods.add(new HeckMethodProps(HeckMethods.FOUR_WAY_SYMMETRICAL_THREE_BY_THREE, 2, 4));
@@ -49,9 +50,9 @@ public class YAEHSettings {
 		heckMethods.add(new HeckMethodProps(HeckMethods.SMELTING, 1, 4));
 	}
 	
-	private static void addAllSubtypesTo(List<ItemStack> list, Block b) {
+	private static void addAllSubtypesTo(List<HeckTier.TierItemStack> list, Block b, int tier) {
 		NonNullList<ItemStack> bepis = NonNullList.create();
 		b.getSubBlocks(b.getCreativeTab(), bepis);
-		list.addAll(bepis);
+		bepis.forEach(is -> list.add(new HeckTier.TierItemStack(is, tier)));
 	}
 }

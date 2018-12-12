@@ -15,6 +15,7 @@ import quaternary.youreanexpertharry.command.CommandDump;
 import quaternary.youreanexpertharry.heck.AbstractHeckMethod;
 import quaternary.youreanexpertharry.heck.HeckMethods;
 import quaternary.youreanexpertharry.etc.ItemStackReaderWriter;
+import quaternary.youreanexpertharry.heck.HeckTier;
 import quaternary.youreanexpertharry.settings.YAEHSettings;
 
 import java.io.File;
@@ -39,7 +40,7 @@ public class YoureAnExpertHarry {
 	public static Gson gson = new GsonBuilder()
 					.setPrettyPrinting()
 					.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-					.registerTypeHierarchyAdapter(ItemStack.class, new ItemStackReaderWriter())
+					.registerTypeHierarchyAdapter(HeckTier.TierItemStack.class, new ItemStackReaderWriter())
 					.registerTypeHierarchyAdapter(AbstractHeckMethod.class, new HeckMethods.JsonBlah())
 					.create();
 	

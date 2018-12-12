@@ -11,25 +11,28 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.util.JsonUtils;
+import quaternary.youreanexpertharry.heck.HeckTier;
 
 import java.lang.reflect.Type;
 
-public class ItemStackReaderWriter implements JsonSerializer<ItemStack>, JsonDeserializer<ItemStack> {
+public class ItemStackReaderWriter implements JsonSerializer<HeckTier.TierItemStack>, JsonDeserializer<HeckTier.TierItemStack> {
 	@Override
-	public ItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public HeckTier.TierItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject o = JsonUtils.getJsonObject(json, "item stack");
-		return ShapedRecipes.deserializeItem(o, true);
+		return new HeckTier.TierItemStack(ShapedRecipes.deserializeItem(o, true), JsonUtils.getInt(o, "tier", 0));
 	}
 	
 	@Override
-	public JsonElement serialize(ItemStack stack, Type typeOfSrc, JsonSerializationContext context) {
-		Item i = stack.getItem();
-		int count = stack.getCount();
+	public JsonElement serialize(HeckTier.TierItemStack stack, Type typeOfSrc, JsonSerializationContext context) {
+		Item i = stack.stack.getItem();
+		int count = stack.stack.getCount();
+		int tier = stack.tier;
 		
 		JsonObject o = new JsonObject();
 		o.addProperty("item", i.getRegistryName().toString());
 		if(count != 1) o.addProperty("count", count);
-		if(i.getHasSubtypes()) o.addProperty("data", stack.getMetadata());
+		if(i.getHasSubtypes()) o.addProperty("data", stack.stack.getMetadata());
+		if(tier != 0) o.addProperty("tier", tier);
 		
 		return o;
 	}
