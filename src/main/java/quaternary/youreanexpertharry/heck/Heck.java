@@ -11,12 +11,7 @@ import quaternary.youreanexpertharry.settings.YAEHSettings;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Heck {
@@ -25,38 +20,79 @@ public class Heck {
 	
 	public static void doHeck() throws Heckception {
 		YAEHSettings settings = YoureAnExpertHarry.settings;
+		HeckData allHeck = new HeckData(settings);
 		
 		Collection<Item> allItemsCollection = ForgeRegistries.ITEMS.getValuesCollection();
 		allItems = new ArrayList<>(allItemsCollection);
-		
-		int currentLevel = settings.topDifficulty;
-		Set<GoodItemStack> toAddRecipesFor = new HashSet<>();
-		Set<GoodItemStack> toAddRecipesForNext = new HashSet<>();
-		Set<GoodItemStack> bannedItems = new HashSet<>(); 
-		Set<AbstractHeckMethod> usedMethods = new HashSet<>();
-		
-		settings.bannedItems.forEach(s -> bannedItems.add(new GoodItemStack(s)));
-		settings.goalItems.forEach(s -> toAddRecipesFor.add(new GoodItemStack(s)));
+		List<HeckTier> tiers = new ArrayList<>();
+		for (int i = 0; i <= settings.topDifficulty; i++) {
+			tiers.add(new HeckTier(i));
+		}
+		//Set<GoodItemStack> toAddRecipesFor = new HashSet<>();
+		//Set<GoodItemStack> toAddRecipesForNext = new HashSet<>();
+		//Set<GoodItemStack> bannedItems = new HashSet<>();
+		//Set<GoodItemStack> allGoalItems = new HashSet<>();
+		//Set<GoodItemStack> baseItems = new HashSet<>();
+		//Set<AbstractHeckMethod> usedMethods = new HashSet<>();
+
+		//If 0, put in bannedItems; if greater, put in specific categories.
+		//If it's banned at tier 1 then it'll never be chosen. If it's banned at tier 2 then it'll be
+		//for (HeckTier.TierItemStack tis : settings.bannedItems) {
+		//if (tis.tier == 0) {
+		//bannedItems.add(new GoodItemStack(tis));
+		//}
+		//else for (int i = tis.tier; i <= settings.topDifficulty; i++) {
+		//tiers.get(i).bannedItems.add(new GoodItemStack(tis));
+		//}
+		//}
+
+		//Test in mind to check if a goalItem for a tier should be banned at that tier.
+		//Wait! Shouldn't it be chooseable at any tier as long as it's been made in a previous tier?
+		//So we shouldn't ban it! But we have to make sure it doesn't get added in any tier higher than it should be.
+		//for (HeckTier.TierItemStack tis : settings.goalItems) {
+		//GoodItemStack gis = new GoodItemStack(tis);
+		//allGoalItems.add(gis);
+		//if (tis.tier == 0 || tis.tier == settings.topDifficulty) {
+		//toAddRecipesFor.add(gis);
+		//}
+		//else {
+		//tiers.get(tis.tier).goalItems.add(gis);
+				//for (int i = tis.tier + 1; i <= settings.topDifficulty; i++) {
+				//	tiers.get(i).bannedItems.add(new GoodItemStack(tis));
+				//}
+		//}
+		//}
+
+		//for (HeckTier.TierItemStack tis : settings.baseItems) {
+		//GoodItemStack gis = new GoodItemStack(tis);
+		//baseItems.add(gis);
+		//}
 		
 		//don't use a top tier item in another top tier item recipe
 		//for that VARIED GAMEPLAY
-		bannedItems.addAll(toAddRecipesFor);
+		//bannedItems.addAll(toAddRecipesFor);
 		
 		List<String> zenBody = new ArrayList<>();
 		int recipeCount = 0;
-		
-		while(currentLevel >= 1) {
-			zenBody.add("// RECIPE LEVEL: " + currentLevel + "\n\n");
-			
-			for(GoodItemStack outputGood : toAddRecipesFor) {
+
+		//We need to ensure that all the base items from tier 1 have recipes. That will be... tough.
+		//We need base items that the mod can use.
+		while(allHeck.currentLevel >= 1) {
+			zenBody.add("// RECIPE LEVEL: " + allHeck.currentLevel + "\n\n");
+
+			//don't use these items within this tier or in future recipes
+			allHeck.toAddRecipesFor.forEach(outputGood -> allHeck.bannedItems.add(outputGood));
+
+
+			for(GoodItemStack outputGood : allHeck.toAddRecipesFor) {
 				ItemStack output = outputGood.actualStack;
 				
-				AbstractHeckMethod method = chooseMethod(settings, currentLevel);
-				usedMethods.add(method);
+				AbstractHeckMethod method = chooseMethod(settings, allHeck.currentLevel);
+				allHeck.usedMethods.add(method);
 				
 				List<ItemStack> recipeStacks = new ArrayList<>(method.inputCount);
 				for(int a = 0; a < method.inputCount; a++) {
-					recipeStacks.add(chooseItem(bannedItems, outputGood));
+					recipeStacks.add(chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, outputGood));
 				}
 				
 				StringBuilder b = new StringBuilder();
@@ -76,19 +112,63 @@ public class Heck {
 				recipeCount++;
 				
 				//mark all of the items added in this recipe as candidates for items to add next turn
-				recipeStacks.forEach(r -> toAddRecipesForNext.add(new GoodItemStack(r)));
-				//don't use this item again in recipes
-				bannedItems.add(outputGood);
+				//Say we're in tier 5 and obsidian is a tier 2 goal item and it gets added to the recipe.
+				//It's contained in allGoalItems, so it doesn't get added to toAddRecipesForNext.
+				//But when we get to tier 2 then it will get added.
+				//If we're in tier 1 obsidian will already be banned because it was added as a recipe in tier 2.
+				for (ItemStack is : recipeStacks) {
+					GoodItemStack gis = new GoodItemStack(is);
+					if (!(allHeck.allGoalItems.contains(gis)) && !(allHeck.baseItems.contains(gis))) {
+						allHeck.toAddRecipesForNext.add(gis);
+					}
+				}
 			}
 			
-			currentLevel--;
-			toAddRecipesFor.clear();
-			toAddRecipesFor.addAll(toAddRecipesForNext);
-			toAddRecipesForNext.clear();
+			allHeck.currentLevel--;
+			allHeck.toAddRecipesFor.clear();
+			allHeck.toAddRecipesFor.addAll(allHeck.toAddRecipesForNext);
+			//Adds all the relevant goal items to the next tier.
+			allHeck.toAddRecipesFor.addAll(allHeck.tiers.get(allHeck.currentLevel).goalItems);
+			allHeck.toAddRecipesForNext.clear();
 		}
+
+		zenBody.add("// RECIPE LEVEL: Base" + "\n\n");
+
+		//don't use these items within this tier or in future recipes
+		allHeck.toAddRecipesFor.forEach(outputGood -> allHeck.bannedItems.add(outputGood));
+
+		for(GoodItemStack outputGood : allHeck.toAddRecipesFor) {
+			ItemStack output = outputGood.actualStack;
+
+			AbstractHeckMethod method = chooseMethod(settings, 1);
+			allHeck.usedMethods.add(method);
+
+			List<ItemStack> recipeStacks = new ArrayList<>(method.inputCount);
+			for(int a = 0; a < method.inputCount; a++) {
+				recipeStacks.add(chooseBaseItem(allHeck.baseItems));
+			}
+
+			StringBuilder b = new StringBuilder();
+
+			b.append("//Recipe ");
+			b.append(recipeCount);
+			b.append('\n');
+
+			b.append(method.removeExistingRecipe(output));
+			b.append('\n');
+
+			b.append(method.writeZenscript("youre_an_expert_harry_" + recipeCount, output, recipeStacks));
+			b.append('\n');
+
+			zenBody.add(b.toString());
+
+			recipeCount++;
+		}
+
+
 		
 		StringBuilder header = new StringBuilder();
-		usedMethods.forEach(a -> a.getRequiredImports().ifPresent(i -> {
+		allHeck.usedMethods.forEach(a -> a.getRequiredImports().ifPresent(i -> {
 			header.append(i);
 			header.append('\n');
 		}));
@@ -112,8 +192,8 @@ public class Heck {
 		else return methods.get(random.nextInt(methods.size()));
 	}
 
-	//Going to add a list of tier-banned items to the parameters.
-	private static ItemStack chooseItem(Set<GoodItemStack> forbiddenItems, GoodItemStack alsoBannedItem) throws Heckception {
+
+	public static ItemStack chooseItem(Set<GoodItemStack> forbiddenItems, Set<GoodItemStack> tierBannedItems,  GoodItemStack alsoBannedItem) throws Heckception {
 		for(int tries = 0; tries < 1000; tries++) {
 			Item i = allItems.get(random.nextInt(allItems.size()));
 			int data;
@@ -128,10 +208,28 @@ public class Heck {
 			
 			ItemStack hahayes = new ItemStack(i, 1, data);
 			GoodItemStack bep = new GoodItemStack(hahayes);
-			if(!hahayes.isEmpty() && !forbiddenItems.contains(bep) && !alsoBannedItem.equals(bep)) return hahayes;
+			if(!hahayes.isEmpty() && !forbiddenItems.contains(bep) && !tierBannedItems.contains(bep) && !alsoBannedItem.equals(bep)) return hahayes;
 		}
 		
 		throw new Heckception("Ran out of input items for recipes (couldn't find a fresh item to add to a recipe after 1000 tries). Either your difficulty is set too high, or you are just unlucky");
+	}
+
+
+	private static ItemStack chooseBaseItem(Set<GoodItemStack> baseItems) {
+		ArrayList<GoodItemStack> base = new ArrayList<>();
+		base.addAll(baseItems);
+		Item i = base.get(random.nextInt(base.size())).actualStack.getItem();
+		int data;
+		if (i.getHasSubtypes()) {
+			NonNullList<ItemStack> choices = NonNullList.create();
+			i.getSubItems(i.getCreativeTab(), choices);
+			if(choices.isEmpty()) data = 0;
+			else data = choices.get(random.nextInt(choices.size())).getMetadata();
+		} else {
+			data = 0;
+		}
+
+		return new ItemStack(i, 1, data);
 	}
 	
 	public static class GoodItemStack {

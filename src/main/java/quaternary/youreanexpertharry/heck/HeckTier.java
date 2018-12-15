@@ -4,8 +4,19 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class HeckTier {
     public int id;
+    public Set<Heck.GoodItemStack> bannedItems = new HashSet<>();
+    public Set<Heck.GoodItemStack> goalItems = new HashSet<>();
+
+    public HeckTier(int id) {
+        this.id = id;
+    }
 
     public static class TierItemStack {
         public ItemStack stack;
