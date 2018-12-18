@@ -5,17 +5,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
 import quaternary.youreanexpertharry.YoureAnExpertHarry;
+import quaternary.youreanexpertharry.heck.methods.ShapelessTwoByTwoMethod;
 import quaternary.youreanexpertharry.settings.YAEHSettings;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Heck {
-	static Random random = new Random();
+	public static Random random = new Random();
 	static List<Item> allItems;
 	
 	public static void doHeck() throws Heckception {
@@ -86,14 +90,35 @@ public class Heck {
 
 			for(GoodItemStack outputGood : allHeck.toAddRecipesFor) {
 				ItemStack output = outputGood.actualStack;
-				
-				AbstractHeckMethod method = chooseMethod(settings, allHeck.currentLevel);
+
+				List<ItemStack> recipeStacks = new ArrayList<>();
+				AbstractHeckMethod method = chooseMethod(settings, allHeck.currentLevel, null);
 				allHeck.usedMethods.add(method);
-				
-				List<ItemStack> recipeStacks = new ArrayList<>(method.inputCount);
-				for(int a = 0; a < method.inputCount; a++) {
-					recipeStacks.add(chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, outputGood));
+
+				for (int i = 0; i < 6; i++) {
+					Pair<List<ItemStack>, Boolean> attempt;
+					attempt = method.chooseInputs(allHeck, outputGood, false);
+					if (attempt.getRight() == true) {
+						recipeStacks = attempt.getLeft();
+						allHeck.usedMethods.add(method);
+						break;
+					}
+					method = chooseMethod(settings, allHeck.currentLevel, method);
 				}
+
+				if (recipeStacks.size() == 0) throw new Heckception("ran out of possible recipes, somehow!");
+
+
+
+
+
+
+				//else {
+					//recipeStacks = new ArrayList<>(method.inputCount);
+					//for (int a = 0; a < method.inputCount; a++) {
+						//recipeStacks.add(chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, allHeck.baseItems, outputGood, false));
+					//}
+				//}
 				
 				StringBuilder b = new StringBuilder();
 				
@@ -101,7 +126,7 @@ public class Heck {
 				b.append(recipeCount);
 				b.append('\n');
 				
-				b.append(method.removeExistingRecipe(output));
+				b.append(method.removeRecipe(output));
 				b.append('\n');
 				
 				b.append(method.writeZenscript("youre_an_expert_harry_" + recipeCount, output, recipeStacks));
@@ -140,13 +165,23 @@ public class Heck {
 		for(GoodItemStack outputGood : allHeck.toAddRecipesFor) {
 			ItemStack output = outputGood.actualStack;
 
-			AbstractHeckMethod method = chooseMethod(settings, 1);
+			AbstractHeckMethod method = chooseMethod(settings, 1, null);
 			allHeck.usedMethods.add(method);
 
-			List<ItemStack> recipeStacks = new ArrayList<>(method.inputCount);
-			for(int a = 0; a < method.inputCount; a++) {
-				recipeStacks.add(chooseBaseItem(allHeck.baseItems));
+			List<ItemStack> recipeStacks = new ArrayList<>();
+
+			for (int i = 0; i < 6; i++) {
+				Pair<List<ItemStack>, Boolean> attempt;
+				attempt = method.chooseInputs(allHeck, outputGood, true);
+				if (attempt.getRight() == true) {
+					recipeStacks = attempt.getLeft();
+					allHeck.usedMethods.add(method);
+					break;
+				}
+				method = chooseMethod(settings, 1, method);
 			}
+
+			if (recipeStacks.size() == 0) throw new Heckception("ran out of possible recipes, somehow!");
 
 			StringBuilder b = new StringBuilder();
 
@@ -154,7 +189,7 @@ public class Heck {
 			b.append(recipeCount);
 			b.append('\n');
 
-			b.append(method.removeExistingRecipe(output));
+			b.append(method.removeRecipe(output));
 			b.append('\n');
 
 			b.append(method.writeZenscript("youre_an_expert_harry_" + recipeCount, output, recipeStacks));
@@ -181,19 +216,32 @@ public class Heck {
 		
 		YoureAnExpertHarry.LOGGER.info("Done");
 	}
-	
-	private static AbstractHeckMethod chooseMethod(YAEHSettings settings, int currentLevel) throws Heckception {
-		List<AbstractHeckMethod> methods = settings.heckMethods.stream()
-						.filter(p -> currentLevel <= p.maxLevel && currentLevel >= p.minLevel)
-						.map(p -> p.method)
-						.collect(Collectors.toList());
+
+	//Add disallowed recipes
+	private static AbstractHeckMethod chooseMethod(YAEHSettings settings, int currentLevel, AbstractHeckMethod disallowedMethod) throws Heckception {
+		List<AbstractHeckMethod> methods;
+
+		if (currentLevel > 0) {
+			methods = settings.heckMethods.stream()
+					.filter(p -> currentLevel <= p.maxLevel && currentLevel >= p.minLevel)
+					.map(p -> p.method)
+					.collect(Collectors.toList());
+		} else {
+			methods = new ArrayList<>();
+			methods.add(HeckMethods.FOUR_WAY_SYMMETRICAL_THREE_BY_THREE);
+			methods.add(HeckMethods.SHAPED_THREE_BY_THREE);
+			methods.add(HeckMethods.SHAPELESS_TWO_BY_TWO);
+		}
+
+		methods.remove(disallowedMethod);
 		
 		if(methods.size() == 0) throw new Heckception("No heckmethods available for level " + currentLevel);
 		else return methods.get(random.nextInt(methods.size()));
 	}
 
 
-	public static ItemStack chooseItem(Set<GoodItemStack> forbiddenItems, Set<GoodItemStack> tierBannedItems,  GoodItemStack alsoBannedItem) throws Heckception {
+	public static ItemStack chooseItem(Set<GoodItemStack> forbiddenItems, Set<GoodItemStack> tierBannedItems, Set<GoodItemStack> baseItems, GoodItemStack alsoBannedItem, boolean base) throws Heckception {
+		if (base) return chooseBaseItem(baseItems);
 		for(int tries = 0; tries < 1000; tries++) {
 			Item i = allItems.get(random.nextInt(allItems.size()));
 			int data;
@@ -254,7 +302,7 @@ public class Heck {
 		}
 	}
 	
-	private static final int LINES_PER_FILE = 200;
+	private static final int LINES_PER_FILE = 150;
 	
 	public static void splitAndWriteZenscript(String header, List<String> lines, File scriptsFolder) throws Heckception {
 		int fileCount = MathHelper.ceil(lines.size() / (float) LINES_PER_FILE);

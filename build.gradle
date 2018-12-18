@@ -41,6 +41,7 @@ minecraft {
 dependencies {
     runtime "com.blamejared:MTLib:3.0.4.8"
     runtime "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.12.507"
+    deobfCompile "vazkii.botania:Botania:r1.10-357.7"
     
     runtime "mezz.jei:jei_1.12.2:4.13.1.225"
 }

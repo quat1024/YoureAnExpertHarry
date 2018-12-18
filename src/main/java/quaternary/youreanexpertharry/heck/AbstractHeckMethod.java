@@ -1,12 +1,9 @@
 package quaternary.youreanexpertharry.heck;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import net.minecraft.item.ItemStack;
+import org.apache.commons.lang3.tuple.Pair;
+import quaternary.youreanexpertharry.YoureAnExpertHarry;
+import quaternary.youreanexpertharry.modules.AbstractModule;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +20,23 @@ public abstract class AbstractHeckMethod {
 	public abstract String removeExistingRecipe(ItemStack output);
 	public abstract String writeZenscript(String recipeName, ItemStack output, List<ItemStack> inputs);
 	public abstract List<ItemStack> getRequiredItems();
+	public abstract Pair<List<ItemStack>, Boolean> chooseInputs(HeckData allHeck, Heck.GoodItemStack outputGood, boolean base) throws Heckception;
 	
+	public String removeRecipe(ItemStack output) {
+		StringBuilder b = new StringBuilder();
+		b.append(HeckMethods.SHAPED_THREE_BY_THREE.removeExistingRecipe(output));
+		b.append("\n");
+		b.append(HeckMethods.SMELTING.removeExistingRecipe(output));
+		b.append("\n");
+		for (AbstractModule mod : YoureAnExpertHarry.modules) {
+			for (String id : mod.getMethodIds()) {
+				b.append(mod.getMethods().get(id).removeExistingRecipe(output));
+				b.append("\n");
+			}
+		}
+		return b.toString();
+	}
+
 	public static String stackToBracket(ItemStack stack) {
 		if(stack.getMetadata() != 0) {
 			return String.format("<item:%s:%s>", stack.getItem().getRegistryName(), stack.getMetadata());

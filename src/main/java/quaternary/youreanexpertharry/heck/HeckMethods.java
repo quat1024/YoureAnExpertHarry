@@ -9,11 +9,13 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import quaternary.youreanexpertharry.YoureAnExpertHarry;
 import quaternary.youreanexpertharry.heck.methods.FourWaySymmetricalShapedThreeByThreeMethod;
 import quaternary.youreanexpertharry.heck.methods.ShapedThreeByThreeMethod;
 import quaternary.youreanexpertharry.heck.methods.ShapelessTwoByTwoMethod;
 import quaternary.youreanexpertharry.heck.methods.SmeltingMethod;
 import quaternary.youreanexpertharry.heck.methods.SymmetricalShapedThreeByThreeMethod;
+import quaternary.youreanexpertharry.modules.AbstractModule;
 
 import java.lang.reflect.Type;
 
@@ -45,6 +47,10 @@ public class HeckMethods {
 		SYMMETRICAL_SHAPED_THREE_BY_THREE = registerMethod("butterfly_shaped_3x3", new SymmetricalShapedThreeByThreeMethod());
 		FOUR_WAY_SYMMETRICAL_THREE_BY_THREE = registerMethod("square_shaped_3x3", new FourWaySymmetricalShapedThreeByThreeMethod());
 		SMELTING = registerMethod("furnace", new SmeltingMethod());
+
+		for (AbstractModule mod : YoureAnExpertHarry.modules) {
+			mod.init(methods);
+		}
 	}
 	
 	public static class JsonBlah implements JsonDeserializer<AbstractHeckMethod>, JsonSerializer<AbstractHeckMethod> {
@@ -60,6 +66,7 @@ public class HeckMethods {
 		
 		@Override
 		public JsonElement serialize(AbstractHeckMethod hecc, Type typeOfSrc, JsonSerializationContext context) {
+			YoureAnExpertHarry.LOGGER.info(getName(hecc));
 			return new JsonPrimitive(getName(hecc));
 		}
 	}

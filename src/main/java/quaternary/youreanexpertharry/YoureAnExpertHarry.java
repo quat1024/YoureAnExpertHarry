@@ -4,8 +4,8 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -16,6 +16,8 @@ import quaternary.youreanexpertharry.heck.AbstractHeckMethod;
 import quaternary.youreanexpertharry.heck.HeckMethods;
 import quaternary.youreanexpertharry.etc.ItemStackReaderWriter;
 import quaternary.youreanexpertharry.heck.HeckTier;
+import quaternary.youreanexpertharry.modules.AbstractModule;
+import quaternary.youreanexpertharry.modules.botania.ModuleBotania;
 import quaternary.youreanexpertharry.settings.YAEHSettings;
 
 import java.io.File;
@@ -23,6 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(
 				modid = YoureAnExpertHarry.MODID,
@@ -45,14 +49,20 @@ public class YoureAnExpertHarry {
 					.create();
 	
 	public static File settingsFile;
+
+	public static List<AbstractModule> modules = new ArrayList<>();
 	
 	@Mod.EventHandler
 	public static void preinit(FMLPreInitializationEvent e) {
+		if (Loader.isModLoaded("botania") && Loader.isModLoaded("modtweaker")) {
+			modules.add(new ModuleBotania());
+		}
+
 		HeckMethods.init();
 		
 		settingsFile = new File(e.getSuggestedConfigurationFile().getParent() + File.separator + MODID + ".json");
-		
-		
+
+
 	}
 	
 	@Mod.EventHandler

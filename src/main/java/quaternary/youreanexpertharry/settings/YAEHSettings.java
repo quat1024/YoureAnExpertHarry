@@ -5,9 +5,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.common.Loader;
 import quaternary.youreanexpertharry.heck.HeckMethods;
 import quaternary.youreanexpertharry.etc.HeckMethodProps;
 import quaternary.youreanexpertharry.heck.HeckTier;
+import quaternary.youreanexpertharry.modules.botania.ModuleBotania;
+import vazkii.botania.common.block.ModBlocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +92,13 @@ public class YAEHSettings {
 		heckMethods.add(new HeckMethodProps(HeckMethods.SHAPED_THREE_BY_THREE, 5, 5));
 		//Sanity check--one furnace recipe per tier!
 		heckMethods.add(new HeckMethodProps(HeckMethods.SMELTING, 1, 4));
+
+		//Botania stuff
+		if (Loader.isModLoaded("botania") && Loader.isModLoaded("modtweaker")) {
+			goalItems.add(new HeckTier.TierItemStack(new ItemStack(ModBlocks.pool), 1));
+			heckMethods.add(new HeckMethodProps(HeckMethods.methods.get("mana_infusion"), 2, 4));
+
+		}
 	}
 	
 	private static void addAllSubtypesTo(List<HeckTier.TierItemStack> list, Block b, int tier) {

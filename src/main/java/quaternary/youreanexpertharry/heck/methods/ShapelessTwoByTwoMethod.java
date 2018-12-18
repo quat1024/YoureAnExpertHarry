@@ -1,7 +1,10 @@
 package quaternary.youreanexpertharry.heck.methods;
 
 import net.minecraft.item.ItemStack;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import quaternary.youreanexpertharry.YoureAnExpertHarry;
+import quaternary.youreanexpertharry.etc.ShapelessStack;
 import quaternary.youreanexpertharry.heck.Heck;
 import quaternary.youreanexpertharry.heck.HeckData;
 import quaternary.youreanexpertharry.heck.Heckception;
@@ -16,7 +19,7 @@ public class ShapelessTwoByTwoMethod extends AbstractCraftingMethod {
 		super(4);
 	}
 
-	public List<ItemStack> chooseInputs(HeckData allHeck, Heck.GoodItemStack outputGood) throws Heckception {
+	public Pair<List<ItemStack>, Boolean> chooseInputs(HeckData allHeck, Heck.GoodItemStack outputGood, boolean base) throws Heckception {
 		List<ItemStack> recipeStacks = new ArrayList<>(this.inputCount);
 		HashSet<ShapelessStack> shapelessSet = new HashSet<>();
 
@@ -26,16 +29,18 @@ public class ShapelessTwoByTwoMethod extends AbstractCraftingMethod {
 			recipeStacks.clear();
 			shapelessSet.clear();
 			for(int a = 0; a < this.inputCount; a++) {
-				recipeStacks.add(Heck.chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, outputGood));
+				recipeStacks.add(Heck.chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, allHeck.baseItems, outputGood, base));
 			}
 			recipeStacks.forEach(is -> shapelessAdd(recipeStacks, shapelessSet, is));
 
+			//YoureAnExpertHarry.LOGGER.info("Sanity-checking s2b2");
+            //YoureAnExpertHarry.LOGGER.info(recipeStacks.toString());
 			sanity = this.sanityCheck(shapelessSet);
 		}
-
+		//YoureAnExpertHarry.LOGGER.info("Sanity succeeded");
 		sanitySet.add(shapelessSet);
 
-		return recipeStacks;
+		return new MutablePair<>(recipeStacks, new Boolean(true));
 
 	}
 
@@ -67,28 +72,5 @@ public class ShapelessTwoByTwoMethod extends AbstractCraftingMethod {
 			}
 		}
 		if (!(found)) shapelessSet.add(new ShapelessStack(gis, 1));
-	}
-
-	public class ShapelessStack {
-		Heck.GoodItemStack actualStack;
-		int count;
-		ShapelessStack(Heck.GoodItemStack gis, int count) {
-			this.actualStack = gis;
-			this.count = count;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof ShapelessStack) {
-				ItemStack other = ((ShapelessStack)obj).actualStack.actualStack;
-				return other.getItem() == actualStack.actualStack.getItem() && other.getMetadata() == actualStack.actualStack.getMetadata()
-						&& ((ShapelessStack) obj).count == count;
-			} else return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return actualStack.actualStack.getItem().getRegistryName().hashCode() + actualStack.actualStack.getMetadata() * 1232323 + count * 4565656;
-		}
 	}
 }
