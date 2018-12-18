@@ -10,6 +10,8 @@ import quaternary.youreanexpertharry.heck.AbstractHeckMethod;
 import quaternary.youreanexpertharry.heck.Heck;
 import quaternary.youreanexpertharry.heck.HeckData;
 import quaternary.youreanexpertharry.heck.Heckception;
+import vazkii.botania.api.BotaniaAPI;
+import vazkii.botania.api.recipe.RecipeManaInfusion;
 import vazkii.botania.common.block.ModBlocks;
 
 import java.util.*;
@@ -65,10 +67,15 @@ public class ManaInfusionMethod extends AbstractHeckMethod {
 
     @Override
     public String removeExistingRecipe(ItemStack output) {
-        return String.format(
-                "ManaInfusion.removeRecipe(%s);",
-                stackToBracket(output)
-        );
+        for (RecipeManaInfusion r : BotaniaAPI.manaInfusionRecipes) {
+            if (r.getOutput() != null && (new Heck.GoodItemStack(r.getOutput())).equals(new Heck.GoodItemStack(output))) {
+                return String.format(
+                        "ManaInfusion.removeRecipe(%s);",
+                        stackToBracket(output)
+                );
+            }
+        }
+        return ("");
     }
 
     public String writeZenscript(String recipeName, ItemStack output, List<ItemStack> inputs) {

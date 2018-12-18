@@ -1,16 +1,24 @@
 You're an Expert, Harry!
 ========================
+By the Spirit of Quat
+
+Disclaimer: Quat1024 made this mod in its first iteration. (You can tell because this repo is a fork of his.) He has graciously given control and distribution of it to me (because he thinks it's a horrible idea ~and so do I tbh~).
 
 The new age of expert modpacks has arrived!
 
 To create your very own Expert Mode modpack:
 
-* download *You're an Expert, Harry* and put it in your mods folder; launch the game once to generate a sample config file, `youre_an_expert_harry.json`
+* download *You're an Expert, Harry* and put it in your mods folder; launch the game once to generate a sample config file, `youre_an_expert_harry.json`.
+  * The sample will (eventually) have more reasonable progression. Right now it just guarantees that the modpack is sane and (theoretically) completable.
 * tweak the settings to your liking
   * `goal_items`: An array of items players will have to craft to win your pack
   * `banned_items`: Items that will never appear in a recipe (unobtainable items)
+  * `base_items`: Items that will have their original crafting recipe (like iron ingots), which the mod will use to craft bottom-tier items.
   * `heck_methods`: Available recipes and the recipe levels they are applicable at
   * `top_difficulty`: The starting recipe level of the goal_items.
+  * For each goal and banned item, you can add a tier number.
+  * If you put a goal item in tier 2, the item may show up in recipes in tiers 3, 4, and 5, but it'll be craftable in tier 2.
+  * If you put a banned item in tier 4, the item will be banned in tier 4 and 5 and can't show up until a lower tier.
 * run the game, open a world, and run the command `/youreanexpertharry` 
 * *You're an Expert, Harry* will automatically generate .zs files in your scripts folder
 * Relaunch the game to load your .zs files (make sure you have CraftTweaker)
@@ -27,9 +35,9 @@ To create your very own Expert Mode modpack:
 * I choose 9 more random items to fill that crafting recipe with, and add it to the zenscript file.
 * Now I recurse. I look at the set of 18 items just used to craft level 3 recipes, and generate level 2 recipes for each one.
 * I look at the set of 162 items just used to craft level 2 recipes, and generate level 1 recipes for each one.
-* Level 1 recipes are the last tier, so I stop there.
+* Level 1 recipes are the last tier, so I look at all the items needed and make recipes for them out of base items. (This prevents infinite loops if you pick good base items.)
 
-It shouldn't generate a cycle (since items from higher tiers are added to the "banned" list of lower tiers), but other than that, all bets are off. You might have to perform smelting recipes before you can craft a furnace, for example. Hope you found a blacksmith village house.
+It shouldn't generate a cycle (since items from higher tiers are added to the "banned" list of lower tiers), and you can use goal and banned items to create sanity checks so that you don't have to smelt items before you get a furnace.
 
 ## List of Heck Methods
 
@@ -41,7 +49,11 @@ These are the recipe types. Why I called them "Heck Methods", well, the main fun
 * `square_shaped_3x3`: Rotationally symmetric 3x3 with 3 random items
 * `furnace`: Smelting recipe
 
-More to come, incl. mod compat ones! Wow!
+Botania:
+
+* `mana_infusion`: One item -> one item with a random mana cost between that of manasteel and mana diamonds. No alchemy yet.
+
+More to come iff you're interested.
 
 ### License
 
@@ -49,4 +61,5 @@ Mozilla public license 2.0 or any later version
 
 ### Why?
 
-FTB Odyssey
+Quat: FTB Odyssey
+Me: idek
