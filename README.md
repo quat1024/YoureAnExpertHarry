@@ -13,12 +13,13 @@ To create your very own Expert Mode modpack:
 * tweak the settings to your liking
   * `goal_items`: An array of items players will have to craft to win your pack
   * `banned_items`: Items that will never appear in a recipe (unobtainable items)
-  * `base_items`: Items that will have their original crafting recipe (like iron ingots), which the mod will use to craft bottom-tier items.
+  * `base_items`: Items that will have their original crafting recipe (like iron ingots or gaia spirits), which the mod will use to craft items that wouldn't otherwise have a crafting recipe.
   * `heck_methods`: Available recipes and the recipe levels they are applicable at
   * `top_difficulty`: The starting recipe level of the goal_items.
-  * For each goal and banned item, you can add a tier number.
-  * If you put a goal item in tier 2, the item may show up in recipes in tiers 3, 4, and 5, but it'll be craftable in tier 2.
-  * If you put a banned item in tier 4, the item will be banned in tier 4 and 5 and can't show up until a lower tier.
+  * For each goal, banned, and base item, you can add a tier number.
+  * If you put a goal item in tier 2, the item may show up in recipes in tiers 3 and up, but it'll be craftable in tier 2.
+  * If you put a banned item in tier 4, the item will be banned in tiers 4 and up and can't show up until a lower tier.
+  * If you put a base item in tier 3, the item will be banned in tier 2 and 1, but it can be used in tiers 3 and up.
 * run the game, open a world, and run the command `/youreanexpertharry` 
 * *You're an Expert, Harry* will automatically generate .zs files in your scripts folder
 * Relaunch the game to load your .zs files (make sure you have CraftTweaker)
