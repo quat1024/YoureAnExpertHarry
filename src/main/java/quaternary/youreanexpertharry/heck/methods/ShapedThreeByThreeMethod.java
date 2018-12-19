@@ -3,8 +3,6 @@ package quaternary.youreanexpertharry.heck.methods;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import quaternary.youreanexpertharry.YoureAnExpertHarry;
-import quaternary.youreanexpertharry.etc.ShapelessStack;
 import quaternary.youreanexpertharry.heck.Heck;
 import quaternary.youreanexpertharry.heck.HeckData;
 import quaternary.youreanexpertharry.heck.Heckception;
@@ -43,7 +41,7 @@ public class ShapedThreeByThreeMethod extends AbstractCraftingMethod {
 			recipeStacks.clear();
 			sanityList.clear();
 			for(int a = 0; a < this.inputCount; a++) {
-				recipeStacks.add(Heck.chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, allHeck.baseItems, outputGood, base));
+				recipeStacks.add(Heck.chooseItem(allHeck, outputGood, base));
 			}
 			recipeStacks.forEach(is -> sanityList.add(new Heck.GoodItemStack(is)));
 

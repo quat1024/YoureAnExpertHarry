@@ -1,11 +1,9 @@
 package quaternary.youreanexpertharry.modules.botania;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import quaternary.youreanexpertharry.YoureAnExpertHarry;
 import quaternary.youreanexpertharry.heck.AbstractHeckMethod;
 import quaternary.youreanexpertharry.heck.Heck;
 import quaternary.youreanexpertharry.heck.HeckData;
@@ -40,15 +38,15 @@ public class ManaInfusionMethod extends AbstractHeckMethod {
                 break;
             }
             for(int a = 0; a < this.inputCount; a++) {
-                recipeStacks.add(Heck.chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, allHeck.baseItems, outputGood, base));
+                recipeStacks.add(Heck.chooseItem(allHeck, outputGood, base));
             }
             sanityItem = new Heck.GoodItemStack(recipeStacks.get(0));
 
-            YoureAnExpertHarry.LOGGER.info("Sanity-checking mana infusion");
-            YoureAnExpertHarry.LOGGER.info(recipeStacks.toString());
+            //YoureAnExpertHarry.LOGGER.info("Sanity-checking mana infusion");
+            //YoureAnExpertHarry.LOGGER.info(recipeStacks.toString());
             sanity = this.sanityCheck(sanityItem);
         }
-        YoureAnExpertHarry.LOGGER.info("Sanity succeeded");
+        //YoureAnExpertHarry.LOGGER.info("Sanity succeeded");
         sanitySet.add(sanityItem);
 
         return new MutablePair<>(recipeStacks, new Boolean(success));

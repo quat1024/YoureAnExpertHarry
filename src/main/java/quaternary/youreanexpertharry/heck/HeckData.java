@@ -13,7 +13,7 @@ public class HeckData {
     public Set<Heck.GoodItemStack> toAddRecipesForNext = new HashSet<>();
     public Set<Heck.GoodItemStack> bannedItems = new HashSet<>();
     public Set<Heck.GoodItemStack> allGoalItems = new HashSet<>();
-    public Set<Heck.GoodItemStack> baseItems = new HashSet<>();
+    public Set<Heck.GoodItemStack> allBaseItems = new HashSet<>();
     public Set<AbstractHeckMethod> usedMethods = new HashSet<>();
 
     public List<HeckTier> tiers = new ArrayList<>();
@@ -55,7 +55,12 @@ public class HeckData {
 
         for (HeckTier.TierItemStack tis : settings.baseItems) {
             Heck.GoodItemStack gis = new Heck.GoodItemStack(tis);
-            baseItems.add(gis);
+            allBaseItems.add(gis);
+            if (tis.tier == 0) {
+                tiers.get(0).baseItems.add(gis);
+            } else for (int i = 1; i < tis.tier; i++) {
+                tiers.get(i).bannedItems.add(gis);
+            }
         }
 
         //don't use a top tier item in another top tier item recipe

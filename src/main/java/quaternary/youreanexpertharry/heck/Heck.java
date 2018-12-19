@@ -7,13 +7,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import quaternary.youreanexpertharry.YoureAnExpertHarry;
-import quaternary.youreanexpertharry.heck.methods.ShapelessTwoByTwoMethod;
 import quaternary.youreanexpertharry.settings.YAEHSettings;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +33,7 @@ public class Heck {
 		//Set<GoodItemStack> toAddRecipesForNext = new HashSet<>();
 		//Set<GoodItemStack> bannedItems = new HashSet<>();
 		//Set<GoodItemStack> allGoalItems = new HashSet<>();
-		//Set<GoodItemStack> baseItems = new HashSet<>();
+		//Set<GoodItemStack> allBaseItems = new HashSet<>();
 		//Set<AbstractHeckMethod> usedMethods = new HashSet<>();
 
 		//If 0, put in bannedItems; if greater, put in specific categories.
@@ -67,9 +64,9 @@ public class Heck {
 		//}
 		//}
 
-		//for (HeckTier.TierItemStack tis : settings.baseItems) {
+		//for (HeckTier.TierItemStack tis : settings.allBaseItems) {
 		//GoodItemStack gis = new GoodItemStack(tis);
-		//baseItems.add(gis);
+		//allBaseItems.add(gis);
 		//}
 		
 		//don't use a top tier item in another top tier item recipe
@@ -116,7 +113,7 @@ public class Heck {
 				//else {
 					//recipeStacks = new ArrayList<>(method.inputCount);
 					//for (int a = 0; a < method.inputCount; a++) {
-						//recipeStacks.add(chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, allHeck.baseItems, outputGood, false));
+						//recipeStacks.add(chooseItem(allHeck.bannedItems, allHeck.tiers.get(allHeck.currentLevel).bannedItems, allHeck.allBaseItems, outputGood, false));
 					//}
 				//}
 				
@@ -143,7 +140,7 @@ public class Heck {
 				//If we're in tier 1 obsidian will already be banned because it was added as a recipe in tier 2.
 				for (ItemStack is : recipeStacks) {
 					GoodItemStack gis = new GoodItemStack(is);
-					if (!(allHeck.allGoalItems.contains(gis)) && !(allHeck.baseItems.contains(gis))) {
+					if (!(allHeck.allGoalItems.contains(gis)) && !(allHeck.allBaseItems.contains(gis))) {
 						allHeck.toAddRecipesForNext.add(gis);
 					}
 				}
@@ -240,23 +237,38 @@ public class Heck {
 	}
 
 
-	public static ItemStack chooseItem(Set<GoodItemStack> forbiddenItems, Set<GoodItemStack> tierBannedItems, Set<GoodItemStack> baseItems, GoodItemStack alsoBannedItem, boolean base) throws Heckception {
-		if (base) return chooseBaseItem(baseItems);
+	public static ItemStack chooseItem(HeckData allHeck, GoodItemStack alsoBannedItem, boolean base) throws Heckception {
+		if (base) return chooseBaseItem(allHeck.allBaseItems);
+		Set<GoodItemStack> tierBaseItems = allHeck.tiers.get(allHeck.currentLevel).baseItems;
 		for(int tries = 0; tries < 1000; tries++) {
-			Item i = allItems.get(random.nextInt(allItems.size()));
-			int data;
-			if(i.getHasSubtypes()) {
-				NonNullList<ItemStack> choices = NonNullList.create();
-				i.getSubItems(i.getCreativeTab(), choices);
-				if(choices.isEmpty()) data = 0;
-				else data = choices.get(random.nextInt(choices.size())).getMetadata();
+			GoodItemStack bep;
+			ItemStack hahayes;
+
+			//Tries to add a baseItem from the tier with a chance that scales with number of items in tier.
+			//Next up, change baseList so it actually has all the base items from every tier lower than the current one.
+			if (random.nextInt((YoureAnExpertHarry.settings.topDifficulty - allHeck.currentLevel + 1) * 10) == 1
+					&& tierBaseItems.size() > 0) {
+				ArrayList<GoodItemStack> baseList = new ArrayList<>();
+				baseList.addAll(tierBaseItems);
+				bep = baseList.get(random.nextInt(baseList.size()));
+				hahayes = bep.actualStack;
 			} else {
-				data = 0;
+				Item i = allItems.get(random.nextInt(allItems.size()));
+				int data;
+				if(i.getHasSubtypes()) {
+					NonNullList<ItemStack> choices = NonNullList.create();
+					i.getSubItems(i.getCreativeTab(), choices);
+					if(choices.isEmpty()) data = 0;
+					else data = choices.get(random.nextInt(choices.size())).getMetadata();
+				} else {
+					data = 0;
+				}
+
+				hahayes = new ItemStack(i, 1, data);
+				bep = new GoodItemStack(hahayes);
 			}
-			
-			ItemStack hahayes = new ItemStack(i, 1, data);
-			GoodItemStack bep = new GoodItemStack(hahayes);
-			if(!hahayes.isEmpty() && !forbiddenItems.contains(bep) && !tierBannedItems.contains(bep) && !alsoBannedItem.equals(bep)) return hahayes;
+
+			if(!hahayes.isEmpty() && !allHeck.bannedItems.contains(bep) && !allHeck.tiers.get(allHeck.currentLevel).bannedItems.contains(bep) && !alsoBannedItem.equals(bep)) return hahayes;
 		}
 		
 		throw new Heckception("Ran out of input items for recipes (couldn't find a fresh item to add to a recipe after 1000 tries). Either your difficulty is set too high, or you are just unlucky");

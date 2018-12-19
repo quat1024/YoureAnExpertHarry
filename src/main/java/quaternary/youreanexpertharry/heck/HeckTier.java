@@ -13,6 +13,7 @@ public class HeckTier {
     public int id;
     public Set<Heck.GoodItemStack> bannedItems = new HashSet<>();
     public Set<Heck.GoodItemStack> goalItems = new HashSet<>();
+    public Set<Heck.GoodItemStack> baseItems = new HashSet<>();
 
     public HeckTier(int id) {
         this.id = id;

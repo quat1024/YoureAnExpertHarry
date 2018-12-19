@@ -18,6 +18,7 @@ import quaternary.youreanexpertharry.etc.ItemStackReaderWriter;
 import quaternary.youreanexpertharry.heck.HeckTier;
 import quaternary.youreanexpertharry.modules.AbstractModule;
 import quaternary.youreanexpertharry.modules.botania.ModuleBotania;
+import quaternary.youreanexpertharry.modules.botania.ModuleBotaniaTweaks;
 import quaternary.youreanexpertharry.settings.YAEHSettings;
 
 import java.io.File;
@@ -56,6 +57,9 @@ public class YoureAnExpertHarry {
 	public static void preinit(FMLPreInitializationEvent e) {
 		if (Loader.isModLoaded("botania") && Loader.isModLoaded("modtweaker")) {
 			modules.add(new ModuleBotania());
+		}
+		if (Loader.isModLoaded("botania_tweaks") && Loader.isModLoaded("modtweaker")) {
+			modules.add(new ModuleBotaniaTweaks());
 		}
 
 		HeckMethods.init();

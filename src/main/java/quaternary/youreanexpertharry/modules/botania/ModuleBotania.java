@@ -26,10 +26,6 @@ public class ModuleBotania extends AbstractModule {
         MANA_INFUSION = registerMethod("mana_infusion", new ManaInfusionMethod(), heckMethods);
     }
 
-    public static HeckMethodProps getMethod() {
-        return null;
-    }
-
     public static <T extends AbstractHeckMethod> T registerMethod(String id, T method, BiMap<String, AbstractHeckMethod> heckMethods) {
         methods.put(id, method);
         methodIds.add(id);
